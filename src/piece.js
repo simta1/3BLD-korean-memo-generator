@@ -2,6 +2,10 @@ let len = 50;
 
 class Piece {
     constructor(x, y, z) {
+        this.x = x;
+        this.y = y;
+        this.z = z;
+
         this.vertices = [
             [(x - 1 / 2) * len, (y - 1 / 2) * len, (z - 1 / 2) * len],
             [(x - 1 / 2) * len, (y - 1 / 2) * len, (z + 1 / 2) * len],
@@ -13,12 +17,12 @@ class Piece {
             [(x + 1 / 2) * len, (y + 1 / 2) * len, (z + 1 / 2) * len]
         ];
         
-        this.frontColor = z > 0 ? GREEN : BLACK;
-        this.backColor = z < 0 ? BLUE : BLACK;
-        this.rightColor = x > 0 ? RED : BLACK;
-        this.leftColor = x < 0 ? ORANGE : BLACK;
-        this.upColor = y < 0 ? WHITE : BLACK;
-        this.downColor = y > 0 ? YELLOW : BLACK;
+        this.frontColor = z > 0 ? GREEN : BLACK; // F
+        this.backColor = z < 0 ? BLUE : BLACK; // B
+        this.rightColor = x > 0 ? RED : BLACK; // R
+        this.leftColor = x < 0 ? ORANGE : BLACK; // L
+        this.upColor = y < 0 ? WHITE : BLACK; // U
+        this.downColor = y > 0 ? YELLOW : BLACK; // D
     }
 
     display() {
@@ -64,5 +68,38 @@ class Piece {
             vertex(...this.vertices[6]);
         endShape();
         pop();
+    }
+
+    rotateX(theta) {
+        const c = cos(theta);
+        const s = sin(theta);
+
+        for (let v of this.vertices) {
+            let [x, y, z] = v;
+            v[1] = y * c - z * s;
+            v[2] = y * s + z * c;
+        }
+    }
+    
+    rotateY(theta) {
+        const c = cos(theta);
+        const s = sin(theta);
+    
+        for (let v of this.vertices) {
+            let [x, y, z] = v;
+            v[0] = x * c + z * s;
+            v[2] = -x * s + z * c;
+        }
+    }
+
+    rotateZ(theta) {
+        const c = cos(theta);
+        const s = sin(theta);
+    
+        for (let v of this.vertices) {
+            let [x, y, z] = v;
+            v[0] = x * c - y * s;
+            v[1] = x * s + y * c;
+        }
     }
 }
