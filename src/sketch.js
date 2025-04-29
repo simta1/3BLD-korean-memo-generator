@@ -2,6 +2,9 @@ let cube;
 
 function setup() {
     createCanvas(600, 600, WEBGL);
+    camera(300, -300, 750, 0, 0, 0, 0, 1, 0);
+    orbitControl();
+    
 	cube = new Cube();
     
     createButton('큐브 섞기').mousePressed(mixCube);
