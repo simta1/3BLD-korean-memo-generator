@@ -5,7 +5,7 @@ function setup() {
 	cube = new Cube();
     
     createButton('큐브 섞기').mousePressed(mixCube);
-    createP('현재 구현한 회전 : F, S, B, R, M, L, U, E, D');
+    createP('현재 구현한 회전 : F, S, B, R, M, L, U, E, D, f, b, r, l, u, d');
 }
 
 function draw() {
@@ -24,6 +24,13 @@ function keyReleased() {
     else if (key == 'U') cube.applyMove(Move.U);
     else if (key == 'E') cube.applyMove(Move.E);
     else if (key == 'D') cube.applyMove(Move.D);
+    //
+    else if (key == 'f') cube.applyMove(Move.f);
+    else if (key == 'b') cube.applyMove(Move.b);
+    else if (key == 'r') cube.applyMove(Move.r);
+    else if (key == 'l') cube.applyMove(Move.l);
+    else if (key == 'u') cube.applyMove(Move.u);
+    else if (key == 'd') cube.applyMove(Move.d);
 }
 
 function mixCube() {
