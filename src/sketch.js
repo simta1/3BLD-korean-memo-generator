@@ -4,6 +4,7 @@ function setup() {
     createCanvas(600, 600, WEBGL);
 	cube = new Cube();
     
+    createButton('큐브 섞기').mousePressed(mixCube);
     createP('현재 구현한 회전 : F, S, B, R, M, L, U, E, D');
 }
 
@@ -23,4 +24,8 @@ function keyReleased() {
     else if (key == 'U') cube.applyMove(Move.U);
     else if (key == 'E') cube.applyMove(Move.E);
     else if (key == 'D') cube.applyMove(Move.D);
+}
+
+function mixCube() {
+    for (let cnt = 15; cnt--;) cube.applyMove(randomMove());
 }

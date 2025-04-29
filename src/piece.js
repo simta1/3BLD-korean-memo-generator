@@ -29,7 +29,6 @@ class Piece {
         strokeWeight(1);
         stroke(0);
 
-        push();
         beginShape(QUADS);
             fill(...this.frontColor); // 앞면 // z > 0
             vertex(...this.vertices[1]);
@@ -67,7 +66,6 @@ class Piece {
             vertex(...this.vertices[7]);
             vertex(...this.vertices[6]);
         endShape();
-        pop();
     }
 
     rotateX(theta) {

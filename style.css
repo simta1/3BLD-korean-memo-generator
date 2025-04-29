@@ -6,3 +6,28 @@ html, body {
 canvas {
   display: block;
 }
+
+button {
+  background-color: #6faaff;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 12px;
+  margin: 5px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.2s, transform 0.1s;
+  font-family: 'Pretendard', sans-serif;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  button:hover {
+    background-color: #4e94e6;
+    transform: translateY(-2px);
+  }
+}
+
+button:active {
+  background-color: #3c7ad1;
+  transform: translateY(0);
+}
