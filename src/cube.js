@@ -4,6 +4,8 @@ class Cube {
     constructor() {
         this.pieces = [];
         this.moveQueue = [];
+        this.undoStack = [];
+        this.redoStack = [];
         this.rotating = false;
         
         for (let x = -1; x <= 1; x++) {
@@ -33,7 +35,6 @@ class Cube {
                 this.rotatedAngle = this.targetAngle;
                 this.rotating = false;
             }
-            // console.log(this.rotatedAngle);
         }
         else if (this.moveQueue.length > 0) {
             const { move, isReverse } = this.moveQueue.shift();
@@ -45,9 +46,15 @@ class Cube {
         for (let piece of this.pieces) piece.display();
     }
     
-    applyMove(move, isReverse) {
-        if (!Object.values(Move).includes(move)) return;
+    applyMove(move, isReverse, isUndo = false, isRedo = false) {
+        if (!Object.values(Move).includes(move) || isReverse === undefined) return;
         this.moveQueue.push({ move, isReverse });
+
+        if (isUndo) this.redoStack.push({ move, isReverse });
+        else {
+            this.undoStack.push({ move, isReverse });
+            if (!isRedo) this.redoStack.length = 0;
+        }
     }
 
     startMove(move, isReverse) {
@@ -140,5 +147,17 @@ class Cube {
         this.rotating = true;
         this.rotatedAngle = 0;
         this.rotatingSpeed = this.targetAngle / rotatingAnimationLength;
+    }
+
+    undoMove() {
+        if (this.undoStack.length == 0) return;
+        const { move, isReverse } = this.undoStack.pop();
+        this.applyMove(move, !isReverse, true);
+    }
+
+    redoMove() {
+        if (this.redoStack.length == 0) return;
+        const { move, isReverse } = this.redoStack.pop();
+        this.applyMove(move, !isReverse, false, true);
     }
 }

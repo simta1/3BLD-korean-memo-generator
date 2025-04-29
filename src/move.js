@@ -9,14 +9,11 @@ const Move = {
     E: 7,
     D: 8,
     f: 9,
-    s: 10,
-    b: 11,
-    r: 12,
-    m: 13,
-    l: 14,
-    u: 15,
-    e: 16,
-    d: 17,
+    b: 10,
+    r: 11,
+    l: 12,
+    u: 13,
+    d: 14,
 }
 
 const moves = Object.values(Move);
