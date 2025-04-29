@@ -3,6 +3,8 @@ let cube;
 function setup() {
     createCanvas(600, 600, WEBGL);
 	cube = new Cube();
+    
+    createP('현재 구현한 회전 : F, S, B, R, M, L, U, E, D');
 }
 
 function draw() {

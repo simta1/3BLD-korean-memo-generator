@@ -79,6 +79,11 @@ class Piece {
             v[1] = y * c - z * s;
             v[2] = y * s + z * c;
         }
+
+        let py = this.y;
+        let pz = this.z;
+        this.y = py * c - pz * s;
+        this.z = py * s + pz * c;
     }
     
     rotateY(theta) {
@@ -90,6 +95,11 @@ class Piece {
             v[0] = x * c + z * s;
             v[2] = -x * s + z * c;
         }
+
+        let px = this.x;
+        let pz = this.z;
+        this.x = px * c + pz * s;
+        this.z = -px * s + pz * c;
     }
 
     rotateZ(theta) {
@@ -101,5 +111,16 @@ class Piece {
             v[0] = x * c - y * s;
             v[1] = x * s + y * c;
         }
+        
+        let px = this.x;
+        let py = this.y;
+        this.x = px * c - py * s;
+        this.y = px * s + py * c;
+    }
+
+    endMove() {
+        this.x = Math.round(this.x);
+        this.y = Math.round(this.y);
+        this.z = Math.round(this.z);
     }
 }

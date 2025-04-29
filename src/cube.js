@@ -1,4 +1,4 @@
-let rotatingDuration = 3;
+let rotatingAnimationLength = 8;
 
 class Cube {
     constructor() {
@@ -29,6 +29,7 @@ class Cube {
             else {
                 const theta = this.targetAngle - this.rotatedAngle;
                 for (const piece of this.rotatingPieces) this.rotatingFunction(piece, theta);
+                for (const piece of this.rotatingPieces) piece.endMove();
                 this.rotatedAngle = this.targetAngle;
                 this.rotating = false;
             }
@@ -108,6 +109,6 @@ class Cube {
 
         this.rotating = true;
         this.rotatedAngle = 0;
-        this.rotatingSpeed = this.targetAngle / rotatingDuration;
+        this.rotatingSpeed = this.targetAngle / rotatingAnimationLength;
     }
 }
