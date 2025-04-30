@@ -4,15 +4,23 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Sketch</title>
+    <title>3BLD memo</title>
 
     <link rel="stylesheet" type="text/css" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono&display=swap" rel="stylesheet">
 
     <script src="libraries/p5.min.js"></script>
     <script src="libraries/p5.sound.min.js"></script>
   </head>
 
   <body>
+    <div id="container" style="display: flex;">
+      <div id="left"></div>
+      <div id="right" style="align-self: flex-end; margin-left: 8px;"></div>
+    </div>
+
+    <p style="margin: 3px; margin-left: 5px">현재 구현된 회전 : F, S, B, R, M, L, U, E, D, f, b, r, l, u, d</p>
+
     <script src="src/color.js"></script>
     <script src="src/move.js"></script>
     <script src="src/piece.js"></script>

@@ -1,22 +1,24 @@
 const Move = {
     F: 0,
-    S: 1,
-    B: 2,
-    R: 3,
-    M: 4,
-    L: 5,
-    U: 6,
-    E: 7,
-    D: 8,
-    f: 9,
-    b: 10,
-    r: 11,
-    l: 12,
-    u: 13,
-    d: 14,
+    B: 1,
+    R: 2,
+    L: 3,
+    U: 4,
+    D: 5,
+
+    f: 6,
+    b: 7,
+    r: 8,
+    l: 9,
+    u: 10,
+    d: 11,
+    
+    S: 12,
+    M: 13,
+    E: 14,
 }
 
 const moves = Object.values(Move);
 function randomMove() {
-    return moves[Math.floor(Math.random() * moves.length)];
+    return moves[Math.floor(Math.random() * 6)];
 }

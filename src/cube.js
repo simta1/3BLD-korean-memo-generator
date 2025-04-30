@@ -160,4 +160,12 @@ class Cube {
         const { move, isReverse } = this.redoStack.pop();
         this.applyMove(move, !isReverse, false, true);
     }
+    
+    getM2Memo() {
+        return "구현 중";
+    }
+
+    getR2Memo() {
+        return "구현 중";
+    }
 }
