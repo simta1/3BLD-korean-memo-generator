@@ -3,7 +3,7 @@ let rotatingAnimationLength = 8;
 class Cube {
     constructor() {
         this.pieces = [];
-        this.moveQueue = [];
+        this.pendingMoves = [];
         this.undoStack = [];
         this.redoStack = [];
         this.rotating = false;
@@ -39,9 +39,9 @@ class Cube {
                 this.rotating = false;
             }
         }
-        else if (this.moveQueue.length > 0) {
-            const { move, isReverse } = this.moveQueue.shift();
-            this.startMove(move, isReverse);
+        else if (this.pendingMoves.length > 0) {
+            let move = this.pendingMoves.shift();
+            this.startMove(move);
         }
     }
 
@@ -49,100 +49,167 @@ class Cube {
         for (let piece of this.pieces) piece.display();
     }
     
-    applyMove(move, isReverse, isUndo = false, isRedo = false) {
-        if (!Object.values(Move).includes(move) || isReverse === undefined) return;
-        this.moveQueue.push({ move, isReverse });
+    applyMove(move, isUndo = false, isRedo = false) {
+        if (!Object.values(Move).includes(move)) throw new Error("회전기호 잘못됨: " + move);
+        this.pendingMoves.push(move);
 
-        if (isUndo) this.redoStack.push({ move, isReverse });
+        if (isUndo) this.redoStack.push(move);
         else {
-            this.undoStack.push({ move, isReverse });
+            this.undoStack.push(move);
             if (!isRedo) this.redoStack.length = 0;
         }
     }
 
-    startMove(move, isReverse) {
+    startMove(move) {
         switch (move) {
             case Move.F:
                 this.rotatingPieces = this.pieces.filter(piece => piece.z > 0);
-                this.rotatingFunction = (piece, angle) => piece.rotateZ(angle * (isReverse ? -1 : 1));
+                this.rotatingFunction = (piece, angle) => piece.rotateZ(angle);
+                this.targetAngle = PI / 2;
+                break;
+            case Move.F_:
+                this.rotatingPieces = this.pieces.filter(piece => piece.z > 0);
+                this.rotatingFunction = (piece, angle) => piece.rotateZ(-angle);
                 this.targetAngle = PI / 2;
                 break;
             case Move.f:
                 this.rotatingPieces = this.pieces.filter(piece => piece.z >= 0);
-                this.rotatingFunction = (piece, angle) => piece.rotateZ(angle * (isReverse ? -1 : 1));
+                this.rotatingFunction = (piece, angle) => piece.rotateZ(angle);
                 this.targetAngle = PI / 2;
                 break;
-                
+            case Move.f_:
+                this.rotatingPieces = this.pieces.filter(piece => piece.z >= 0);
+                this.rotatingFunction = (piece, angle) => piece.rotateZ(-angle);
+                this.targetAngle = PI / 2;
+                break;
             case Move.S:
                 this.rotatingPieces = this.pieces.filter(piece => piece.z == 0);
-                this.rotatingFunction = (piece, angle) => piece.rotateZ(angle * (isReverse ? -1 : 1));
+                this.rotatingFunction = (piece, angle) => piece.rotateZ(angle);
                 this.targetAngle = PI / 2;
                 break;
-                
+            case Move.S_:
+                this.rotatingPieces = this.pieces.filter(piece => piece.z == 0);
+                this.rotatingFunction = (piece, angle) => piece.rotateZ(-angle);
+                this.targetAngle = PI / 2;
+                break;
             case Move.B:
                 this.rotatingPieces = this.pieces.filter(piece => piece.z < 0);
-                this.rotatingFunction = (piece, angle) => piece.rotateZ(angle * (isReverse ? 1 : -1));
+                this.rotatingFunction = (piece, angle) => piece.rotateZ(-angle);
+                this.targetAngle = PI / 2;
+                break;
+            case Move.B_:
+                this.rotatingPieces = this.pieces.filter(piece => piece.z < 0);
+                this.rotatingFunction = (piece, angle) => piece.rotateZ(angle);
                 this.targetAngle = PI / 2;
                 break;
             case Move.b:
                 this.rotatingPieces = this.pieces.filter(piece => piece.z <= 0);
-                this.rotatingFunction = (piece, angle) => piece.rotateZ(angle * (isReverse ? 1 : -1));
+                this.rotatingFunction = (piece, angle) => piece.rotateZ(-angle);
                 this.targetAngle = PI / 2;
                 break;
-                
+            case Move.b_:
+                this.rotatingPieces = this.pieces.filter(piece => piece.z <= 0);
+                this.rotatingFunction = (piece, angle) => piece.rotateZ(angle);
+                this.targetAngle = PI / 2;
+                break;
             case Move.R:
                 this.rotatingPieces = this.pieces.filter(piece => piece.x > 0);
-                this.rotatingFunction = (piece, angle) => piece.rotateX(angle * (isReverse ? -1 : 1));
+                this.rotatingFunction = (piece, angle) => piece.rotateX(angle);
+                this.targetAngle = PI / 2;
+                break;
+            case Move.R_:
+                this.rotatingPieces = this.pieces.filter(piece => piece.x > 0);
+                this.rotatingFunction = (piece, angle) => piece.rotateX(-angle);
                 this.targetAngle = PI / 2;
                 break;
             case Move.r:
                 this.rotatingPieces = this.pieces.filter(piece => piece.x >= 0);
-                this.rotatingFunction = (piece, angle) => piece.rotateX(angle * (isReverse ? -1 : 1));
+                this.rotatingFunction = (piece, angle) => piece.rotateX(angle);
                 this.targetAngle = PI / 2;
                 break;
-                
+            case Move.r_:
+                this.rotatingPieces = this.pieces.filter(piece => piece.x >= 0);
+                this.rotatingFunction = (piece, angle) => piece.rotateX(-angle);
+                this.targetAngle = PI / 2;
+                break;
             case Move.M:
                 this.rotatingPieces = this.pieces.filter(piece => piece.x == 0);
-                this.rotatingFunction = (piece, angle) => piece.rotateX(angle * (isReverse ? 1 : -1));
+                this.rotatingFunction = (piece, angle) => piece.rotateX(-angle);
                 this.targetAngle = PI / 2;
                 break;
-                
+            case Move.M_:
+                this.rotatingPieces = this.pieces.filter(piece => piece.x == 0);
+                this.rotatingFunction = (piece, angle) => piece.rotateX(angle);
+                this.targetAngle = PI / 2;
+                break;
             case Move.L:
                 this.rotatingPieces = this.pieces.filter(piece => piece.x < 0);
-                this.rotatingFunction = (piece, angle) => piece.rotateX(angle * (isReverse ? 1 : -1));
+                this.rotatingFunction = (piece, angle) => piece.rotateX(-angle);
+                this.targetAngle = PI / 2;
+                break;
+            case Move.L_:
+                this.rotatingPieces = this.pieces.filter(piece => piece.x < 0);
+                this.rotatingFunction = (piece, angle) => piece.rotateX(angle);
                 this.targetAngle = PI / 2;
                 break;
             case Move.l:
                 this.rotatingPieces = this.pieces.filter(piece => piece.x <= 0);
-                this.rotatingFunction = (piece, angle) => piece.rotateX(angle * (isReverse ? 1 : -1));
+                this.rotatingFunction = (piece, angle) => piece.rotateX(-angle);
                 this.targetAngle = PI / 2;
                 break;
-                
+            case Move.l_:
+                this.rotatingPieces = this.pieces.filter(piece => piece.x <= 0);
+                this.rotatingFunction = (piece, angle) => piece.rotateX(angle);
+                this.targetAngle = PI / 2;
+                break;
             case Move.U:
                 this.rotatingPieces = this.pieces.filter(piece => piece.y < 0);
-                this.rotatingFunction = (piece, angle) => piece.rotateY(angle * (isReverse ? 1 : -1));
+                this.rotatingFunction = (piece, angle) => piece.rotateY(-angle);
+                this.targetAngle = PI / 2;
+                break;
+            case Move.U_:
+                this.rotatingPieces = this.pieces.filter(piece => piece.y < 0);
+                this.rotatingFunction = (piece, angle) => piece.rotateY(angle);
                 this.targetAngle = PI / 2;
                 break;
             case Move.u:
                 this.rotatingPieces = this.pieces.filter(piece => piece.y <= 0);
-                this.rotatingFunction = (piece, angle) => piece.rotateY(angle * (isReverse ? 1 : -1));
+                this.rotatingFunction = (piece, angle) => piece.rotateY(-angle);
                 this.targetAngle = PI / 2;
                 break;
-                
+            case Move.u_:
+                this.rotatingPieces = this.pieces.filter(piece => piece.y <= 0);
+                this.rotatingFunction = (piece, angle) => piece.rotateY(angle);
+                this.targetAngle = PI / 2;
+                break;
             case Move.E:
                 this.rotatingPieces = this.pieces.filter(piece => piece.y == 0);
-                this.rotatingFunction = (piece, angle) => piece.rotateY(angle * (isReverse ? -1 : 1));
+                this.rotatingFunction = (piece, angle) => piece.rotateY(angle);
                 this.targetAngle = PI / 2;
                 break;
-                
+            case Move.E_:
+                this.rotatingPieces = this.pieces.filter(piece => piece.y == 0);
+                this.rotatingFunction = (piece, angle) => piece.rotateY(-angle);
+                this.targetAngle = PI / 2;
+                break;
             case Move.D:
                 this.rotatingPieces = this.pieces.filter(piece => piece.y > 0);
-                this.rotatingFunction = (piece, angle) => piece.rotateY(angle * (isReverse ? -1 : 1));
+                this.rotatingFunction = (piece, angle) => piece.rotateY(angle);
+                this.targetAngle = PI / 2;
+                break;
+            case Move.D_:
+                this.rotatingPieces = this.pieces.filter(piece => piece.y > 0);
+                this.rotatingFunction = (piece, angle) => piece.rotateY(-angle);
                 this.targetAngle = PI / 2;
                 break;
             case Move.d:
                 this.rotatingPieces = this.pieces.filter(piece => piece.y >= 0);
-                this.rotatingFunction = (piece, angle) => piece.rotateY(angle * (isReverse ? -1 : 1));
+                this.rotatingFunction = (piece, angle) => piece.rotateY(angle);
+                this.targetAngle = PI / 2;
+                break;
+            case Move.d_:
+                this.rotatingPieces = this.pieces.filter(piece => piece.y >= 0);
+                this.rotatingFunction = (piece, angle) => piece.rotateY(-angle);
                 this.targetAngle = PI / 2;
                 break;
         }
@@ -154,20 +221,19 @@ class Cube {
 
     undoMove() {
         if (this.undoStack.length == 0) return;
-        const { move, isReverse } = this.undoStack.pop();
-        this.applyMove(move, !isReverse, true);
+        let move = this.undoStack.pop();
+        this.applyMove(inverseMove(move), true);
     }
 
     redoMove() {
         if (this.redoStack.length == 0) return;
-        const { move, isReverse } = this.redoStack.pop();
-        this.applyMove(move, !isReverse, false, true);
+        let move = this.redoStack.pop();
+        this.applyMove(inverseMove(move), false, true);
     }
     
     getM2Memo() {
         if (!this.rotating) {
             let edgePieces = this.pieces.filter(piece => piece.isEdgePiece() && !(piece.isSolved()));
-            if (edgePieces.find(piece => piece.getName() == 'ㅁ')) console.log(1);
             let m2 = [];
             
             let bufferX = 0, bufferY = 1, bufferZ = 1;
@@ -176,11 +242,9 @@ class Cube {
             const checked = new Array(27).fill(0);
             while (true) {
                 const piece = this.pieces.find(piece => piece.x == x && piece.y == y && piece.z == z);
-                // console.log(x, y, z + "=" + piece.x, piece.y, piece.z + "(" + piece.getName() + ") " + piece.origx, piece.origy, piece.origz);
 
                 if (piece.getName() != 'b') m2.push({ pieceName: piece.getName(), sorted: piece.isCorrectOrientation() });
                 checked[piece.getIdx()] = true;
-                // console.log(piece.getName(), checked[piece.getIdx()]);
                 x = piece.origx;
                 y = piece.origy;
                 z = piece.origz;
@@ -188,7 +252,6 @@ class Cube {
                 if (x == bufferX && y == bufferY && z == bufferZ) { // 버퍼 막힘
                     const piece = edgePieces.find(piece => !checked[piece.getIdx()]);
                     if (piece) {
-                        // console.log(piece.getName(), checked[piece.getIdx()]);
                         m2.push({ pieceName: piece.getName(), sorted: true });
                         bufferX = x = piece.origx;
                         bufferY = y = piece.origy;
@@ -223,5 +286,9 @@ class Cube {
         }
 
         return this.r2memo;
+    }
+
+    isRotating() {
+        return this.rotating || this.pendingMoves.length > 0;
     }
 }
