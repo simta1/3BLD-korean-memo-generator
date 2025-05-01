@@ -1,5 +1,5 @@
 let cube;
-let l2memo;
+let m2memo;
 let r2memo;
 
 function setup() {
@@ -9,7 +9,7 @@ function setup() {
     
 	cube = new Cube();
 
-    l2memo = createP('M2:<br>' + cube.getM2Memo()).style('font-family', "'JetBrains Mono', monospace").parent('right');
+    m2memo = createP('M2:<br>' + cube.getM2Memo()).style('font-family', "'JetBrains Mono', monospace").parent('right');
     r2memo = createP('R2:<br>' + cube.getR2Memo()).style('font-family', "'JetBrains Mono', monospace").parent('right');
     createButton('큐브 섞기').mousePressed(mixCube).parent('right');
 }
@@ -18,7 +18,12 @@ function draw() {
 	background(255);
 	orbitControl();
 	cube.run();
-    l2memo.html('M2:<br>' + cube.getM2Memo());
+
+    noFill();
+    stroke(0);
+    rect(-width / 2, -height / 2, width, height);
+
+    m2memo.html('M2:<br>' + cube.getM2Memo());
     r2memo.html('R2:<br>' + cube.getR2Memo());
 }
 

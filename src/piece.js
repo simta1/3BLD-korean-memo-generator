@@ -1,7 +1,12 @@
 let len = 50;
+const pieceName = "ㄴㄱㄱㅂcㅁㅂㅈㅁㄴcㄹcxcㅊcbㄷㄷㄹㅅcㅇㅅㅋb"; // c: 센터조각 x: 큐브중심 b: 버퍼
 
 class Piece {
     constructor(x, y, z) {
+        this.origx = x;
+        this.origy = y;
+        this.origz = z;
+
         this.x = x;
         this.y = y;
         this.z = z;
@@ -23,11 +28,28 @@ class Piece {
         this.leftColor = x < 0 ? ORANGE : BLACK; // L
         this.upColor = y < 0 ? WHITE : BLACK; // U
         this.downColor = y > 0 ? YELLOW : BLACK; // D
+
+        this.colors = [
+            this.frontColor,
+            this.backColor,
+            this.rightColor,
+            this.leftColor,
+            this.upColor,
+            this.downColor
+        ].filter(color => color !== BLACK);
     }
 
     display() {
-        strokeWeight(1);
-        stroke(0);
+        // TODO
+        // 오리엔테이션 안맞는 곳 강조, 버튼으로 활성화/비활성화 가능하게 하기
+        // if (!this.isCorrectOrientation()) {
+        //     strokeWeight(10);
+        //     stroke(...PURPLE);
+        // }
+        // else {
+        //     strokeWeight(1);
+        //     stroke(0);
+        // }
 
         beginShape(QUADS);
             fill(...this.frontColor); // 앞면 // z > 0
@@ -120,5 +142,56 @@ class Piece {
         this.x = Math.round(this.x);
         this.y = Math.round(this.y);
         this.z = Math.round(this.z);
+        for (let v of this.vertices) {
+            v[0] = Math.round(v[0]);
+            v[1] = Math.round(v[1]);
+            v[2] = Math.round(v[2]);
+        }
     }
+
+    getName() {
+        return pieceName[this.getIdx()];
+    }
+    
+    getIdx() {
+        return 9 * (this.origx + 1) + 3 * (this.origy + 1) + (this.origz + 1);
+    }
+
+    isEdgePiece() {
+        return this.colors.length == 2;
+    }
+
+    isCornerPiece() {
+        return this.colors.length == 3;
+    }
+    
+    isCorrectPermutation() {
+        return this.x === this.origx && this.y === this.origy && this.z === this.origz;
+    }
+    
+    isCorrectOrientation() {
+        if (this.isEdgePiece()) {
+            let targetVertices;
+            if (this.colors.includes(WHITE)) targetVertices = [this.vertices[0], this.vertices[1], this.vertices[5], this.vertices[4]];
+            else if (this.colors.includes(YELLOW)) targetVertices = [this.vertices[2], this.vertices[3], this.vertices[7], this.vertices[6]];
+            else if (this.colors.includes(GREEN)) targetVertices = [this.vertices[1], this.vertices[3], this.vertices[7], this.vertices[5]];
+            else targetVertices = [this.vertices[0], this.vertices[2], this.vertices[6], this.vertices[4]]; // BLUE
+        
+
+            if (this.y > 0) return targetVertices.every(v => v[1] > this.y * len);
+            if (this.y < 0) return targetVertices.every(v => v[1] < this.y * len);
+            if (this.z > 0) return targetVertices.every(v => v[2] > this.z * len);
+            return targetVertices.every(v => v[2] < this.z * len);
+        }
+        if (this.isCornerPiece()) {
+            return true;
+        }
+        return true;
+    }
+
+    isSolved() {
+        return this.isCorrectPermutation() && this.isCorrectOrientation();
+    }
+    
+    checkOr
 }

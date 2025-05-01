@@ -5,3 +5,4 @@ const GREEN = [0, 255, 0];
 const BLUE = [0, 0, 255];
 const WHITE = [255, 255, 255];
 const BLACK = [0, 0, 0];
+const PURPLE = [0xCA, 0x64, 0xF4];
