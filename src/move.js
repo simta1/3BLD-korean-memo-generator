@@ -48,6 +48,12 @@ const Move = {
     // E2: 44,
 }
 
+function charToMove(ch) {
+    let idx = "FBRLUDfbrlud".indexOf(ch);
+    if (idx === -1) throw new Error(`회전기호 잘못됨: ${ch}`);
+    return idx;
+}
+
 function inverseMove(move) {
     switch (move) {
         case Move.F: return Move.F_;

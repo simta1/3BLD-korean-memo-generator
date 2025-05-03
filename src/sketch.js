@@ -4,9 +4,10 @@ let R2memo;
 let slider;
 let orientationHighlightToggle;
 
+let scrambleInput, applyInputBtn;
+
 function setup() {
     let canvas = createCanvas(600, 600, WEBGL).style('border', '2px solid black').parent('canvas');
-    select('#bottom').style('width', `${canvas.elt.offsetWidth}px`);
 
     camera(300, -300, 750, 0, 0, 0, 0, 1, 0);
     orbitControl();
@@ -35,9 +36,9 @@ function setup() {
     });
 
     slider = createSlider(1, 60, rotatingAnimationLength, 1)
-        .style('width', '200px')
+        .style('width', '80px')
         .style('margin-top', '10px')
-        .style('display', 'block')
+        .style('vertical-align', 'middle')
         .parent('bottom');
 
     slider.input(() => {
@@ -47,13 +48,30 @@ function setup() {
 
     sliderValueDisplay = createSpan(`회전당 프레임 수 : ${rotatingAnimationLength}`)
         .style('margin-top', '4px')
+        .style('vertical-align', 'middle')
         .parent('bottom');
 
     setTimeout(() => {
         const canvasWidth = min(600, windowWidth - select('#right').elt.offsetWidth - 20);
+
+        scrambleInput = createElement('textarea')
+            .style('display', 'block')
+            .style('resize', 'none')
+            .style('width', `${canvasWidth}px`)
+            .style('margin-top', '5px')
+            .style('margin-bottom', '5px')
+            .parent('bottom');
+
+        applyInputBtn = createButton("스크램블 적용")
+            .mousePressed(applyScramble)
+            .style('margin-top', '0px')
+            .parent('bottom');
+
         const canvasHeight = min(600, windowHeight - select('#bottom').elt.offsetHeight - 20);
         resizeCanvas(canvasWidth, canvasHeight);
     }, 0);
+    
+    console.log("테스트용 스크램블:\nB U2 L2 R2 U2 F D2 B F L' F D L2 F2 D L' U' F");
 }
 
 function draw() {
@@ -86,23 +104,6 @@ function keyReleased() {
 
     // if (key == 'Z') cube.undoMove();
     // else if (key == 'Y') cube.redoMove();
-    
-    // else if (key == 'F') cube.applyMove(Move.F);
-    // else if (key == 'S') cube.applyMove(Move.S);
-    // else if (key == 'B') cube.applyMove(Move.B);
-    // else if (key == 'R') cube.applyMove(Move.R);
-    // else if (key == 'M') cube.applyMove(Move.M);
-    // else if (key == 'L') cube.applyMove(Move.L);
-    // else if (key == 'U') cube.applyMove(Move.U);
-    // else if (key == 'E') cube.applyMove(Move.E);
-    // else if (key == 'D') cube.applyMove(Move.D);
-    // //
-    // else if (key == 'f') cube.applyMove(Move.f);
-    // else if (key == 'b') cube.applyMove(Move.b);
-    // else if (key == 'r') cube.applyMove(Move.r);
-    // else if (key == 'l') cube.applyMove(Move.l);
-    // else if (key == 'u') cube.applyMove(Move.u);
-    // else if (key == 'd') cube.applyMove(Move.d);
 }
 
 function mixCube() {
@@ -118,9 +119,8 @@ function applyM2R2() {
         let str = cube.getM2memo().split("<br>")[0];
         let [a, b] = str.split(',');
         b = b.split('(')[0];
-        // console.log(a, b);
         
-        // M-Slice 고려
+        // M-Slice
         let { first, middle, last } = decomposeKorean(b[0]);
         if (first === 'ㄹ') first = 'ㅊ';
         else if (first === 'ㅊ') first = 'ㄹ';
@@ -132,7 +132,6 @@ function applyM2R2() {
         let str = cube.getR2memo().split("<br>")[0];
         let [a, b] = str.split(',');
         b = b.split('(')[0];
-        // console.log(a, b);
         
         // R-Slice
         let { first, middle, last } = decomposeKorean(b[0]);
@@ -157,4 +156,41 @@ function applyR2(R2piece) {
 
 function applyPLL() {
     for (let move of PLLalgorithm) cube.applyMove(move);
+}
+
+function applyScramble() {
+    if (cube.isRotating()) {
+        alert("큐브의 회전이 끝난 후 다시 시도해 주세요.");
+        return;
+    }
+
+    const moves = [];
+    for (let st of scrambleInput.value().replace(/\n/g, ' ').replace(/,/g, ' ').replace(/([A-Za-z])/g, ' $1').trim().split(/\s+/)) {
+        if (st.length > 2 || (st.length > 1 && !"2'".includes(st[1]))) {
+            alert(`입력 잘못됨: ${st}`);
+            return;
+        }
+
+        let move;
+        try {
+            move = charToMove(st[0]);
+        } catch (e) {
+            alert(`${st} <- 입력 잘못됨
+(가능한 회전 기호: F, B, R, L, U, D, f, b, r, l, u, d,
+F', B', R', L', U', D', f', b', r', l', u', d',
+F2, B2, R2, L2, U2, D2, f2, b2, r2, l2, u2, d2만 가능): `);
+            return;
+        }
+
+        if (st.endsWith('2')) {
+            moves.push(move);
+            moves.push(move);
+        }
+        else {
+            if (st.endsWith("'")) move += Move.F_;
+            moves.push(move);
+        }
+    }
+
+    for (let move of moves) cube.applyMove(move);
 }
