@@ -1,5 +1,6 @@
 let len = 50;
 const pieceName = "ㄴㄱㄱㅂcㅁㅂㅈㅁㄴcㄹcxcㅊcbㄷㄷㄹㅅcㅇㅅㅋb"; // c: 센터조각 x: 큐브중심 b: 버퍼
+let highlightMisorientedPieces = false;
 
 class Piece {
     constructor(x, y, z) {
@@ -40,16 +41,14 @@ class Piece {
     }
 
     display() {
-        // TODO
-        // 오리엔테이션 안맞는 곳 강조, 버튼으로 활성화/비활성화 가능하게 하기
-        // if (!this.isCorrectOrientation()) {
-        //     strokeWeight(10);
-        //     stroke(...PURPLE);
-        // }
-        // else {
-        //     strokeWeight(1);
-        //     stroke(0);
-        // }
+        if (highlightMisorientedPieces && !this.isCorrectOrientation()) {
+            strokeWeight(10);
+            stroke(...PURPLE);
+        }
+        else {
+            strokeWeight(1);
+            stroke(0);
+        }
 
         beginShape(QUADS);
             fill(...this.frontColor); // 앞면 // z > 0

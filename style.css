@@ -31,3 +31,36 @@ button:active {
   background-color: #3c7ad1;
   transform: translateY(0);
 }
+
+input[type="checkbox"] {
+  vertical-align: middle;
+  width: 40px;
+  height: 20px;
+  position: relative;
+  appearance: none;
+  background: #c6c6c6;
+  outline: none;
+  border-radius: 20px;
+  transition: background 0.3s;
+  cursor: pointer;
+}
+
+input[type="checkbox"]::before {
+  content: '';
+  position: absolute;
+  width: 18px;
+  height: 18px;
+  background: white;
+  border-radius: 50%;
+  top: 1px;
+  left: 1px;
+  transition: transform 0.3s;
+}
+
+input[type="checkbox"]:checked {
+  background: #6faaff;
+}
+
+input[type="checkbox"]:checked::before {
+  transform: translateX(20px);
+}

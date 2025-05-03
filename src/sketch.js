@@ -3,9 +3,10 @@ let m2memo;
 let r2memo;
 let m2btn;
 let slider;
+let orientationHighlightToggle;
 
 function setup() {
-    createCanvas(600, 600, WEBGL).style('border', '2px solid black').parent('left');
+    createCanvas(600, 600, WEBGL).style('border', '2px solid black').parent('canvas');
     camera(300, -300, 750, 0, 0, 0, 0, 1, 0);
     orbitControl();
     
@@ -18,10 +19,14 @@ function setup() {
 
     slider = createSlider(1, 60, rotatingAnimationLength, 1).style('display', 'block').style('width', '200px').style('margin-top', '3px').parent('right');
     sliderValueDisplay = createSpan(`회전당 프레임 수 : ${rotatingAnimationLength}`).parent('right');
-
     slider.input(() => {
         rotatingAnimationLength = slider.value();
         sliderValueDisplay.html(`회전당 프레임 수 : ${rotatingAnimationLength}`);
+    });
+    
+    orientationHighlightToggle = createCheckbox('오리엔테이션 강조 표시', highlightMisorientedPieces).style('margin-top', '3px').parent('left');
+    orientationHighlightToggle.changed(() => {
+        highlightMisorientedPieces = orientationHighlightToggle.checked();
     });
 }
 
@@ -30,9 +35,9 @@ function draw() {
     orbitControl();
     cube.run();
 
-    noFill();
-    stroke(0);
-    rect(-width / 2, -height / 2, width, height);
+    // noFill();
+    // stroke(0);
+    // rect(-width / 2, -height / 2, width, height);
 
     if (!cube.isRotating()) {
         m2memo.html('M2:<br>' + cube.getM2Memo());
