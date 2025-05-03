@@ -2,6 +2,7 @@ let cube;
 let m2memo;
 let r2memo;
 let m2btn;
+let slider;
 
 function setup() {
     createCanvas(600, 600, WEBGL).style('border', '2px solid black').parent('left');
@@ -14,12 +15,20 @@ function setup() {
     r2memo = createP('R2:<br>' + cube.getR2Memo()).style('font-family', "'JetBrains Mono', monospace").parent('right');
     createButton('큐브 섞기').mousePressed(mixCube).style('margin-left', '0px').parent('right');
     m2btn = createButton('M2R2 사용').mousePressed(applyM2R2).parent('right');
+
+    slider = createSlider(1, 60, rotatingAnimationLength, 1).style('display', 'block').style('width', '200px').style('margin-top', '3px').parent('right');
+    sliderValueDisplay = createSpan(`회전당 프레임 수 : ${rotatingAnimationLength}`).parent('right');
+
+    slider.input(() => {
+        rotatingAnimationLength = slider.value();
+        sliderValueDisplay.html(`회전당 프레임 수 : ${rotatingAnimationLength}`);
+    });
 }
 
 function draw() {
-	background(255);
-	orbitControl();
-	cube.run();
+    background(255);
+    orbitControl();
+    cube.run();
 
     noFill();
     stroke(0);
@@ -66,6 +75,8 @@ function keyReleased() {
 }
 
 function mixCube() {
+    if (cube.isRotating()) return;
+
     for (let move of mixMoves(20 + Math.floor(Math.random() * 2))) cube.applyMove(move);
 }
 
