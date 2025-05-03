@@ -90,30 +90,24 @@ function draw() {
 }
 
 function keyReleased() {
-    // if (key == 'r') applyR2("고");
-    // else if (key == 's') applyR2("노");
-    // else if (key == 'e') applyR2("도");
-    // else if (key == 'f') applyR2("로");
-    // else if (key == 'a') applyR2("모");
-    // else if (key == 'q') applyR2("보");
-    // else if (key == 't') applyR2("소");
-    // else if (key == 'd') applyR2("오");
-    // else if (key == 'w') applyR2("조");
-    // else if (key == 'c') applyR2("초");
-    // else if (key == 'z') applyR2("코");
-
     // if (key == 'Z') cube.undoMove();
     // else if (key == 'Y') cube.redoMove();
 }
 
 function mixCube() {
-    if (cube.isRotating()) return;
+    if (cube.isRotating()) {
+        alert("큐브의 회전이 끝난 후 다시 시도해 주세요.");
+        return;
+    }
 
     for (let move of mixMoves(20 + Math.floor(Math.random() * 2))) cube.applyMove(move);
 }
 
 function applyM2R2() {
-    if (cube.isRotating()) return;
+    if (cube.isRotating()) {
+        alert("큐브의 회전이 끝난 후 다시 시도해 주세요.");
+        return;
+    }
 
     if (!cube.M2finished()) {
         let str = cube.getM2memo().split("<br>")[0];
@@ -143,6 +137,9 @@ function applyM2R2() {
     }
     else if (!cube.isSolved()) {
         applyPLL();
+    }
+    else {
+        alert('이미 큐브가 맞춰진 상태입니다');
     }
 }
 
