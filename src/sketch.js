@@ -1,7 +1,6 @@
 let cube;
-let m2memo;
-let r2memo;
-let m2btn;
+let M2memo;
+let R2memo;
 let slider;
 let orientationHighlightToggle;
 
@@ -12,10 +11,10 @@ function setup() {
     
 	cube = new Cube();
 
-    m2memo = createP('M2:<br>' + cube.getM2Memo()).style('font-family', "'JetBrains Mono', monospace").parent('right');
-    r2memo = createP('R2:<br>' + cube.getR2Memo()).style('font-family', "'JetBrains Mono', monospace").parent('right');
+    M2memo = createP('M2:<br>' + cube.getM2memo()).style('font-family', "'JetBrains Mono', monospace").parent('right');
+    R2memo = createP('R2:<br>' + cube.getR2memo()).style('font-family', "'JetBrains Mono', monospace").parent('right');
     createButton('큐브 섞기').mousePressed(mixCube).style('margin-left', '0px').parent('right');
-    m2btn = createButton('M2R2 사용').mousePressed(applyM2R2).parent('right');
+    createButton('M2R2 사용').mousePressed(applyM2R2).parent('right');
 
     slider = createSlider(1, 60, rotatingAnimationLength, 1).style('display', 'block').style('width', '200px').style('margin-top', '3px').parent('right');
     sliderValueDisplay = createSpan(`회전당 프레임 수 : ${rotatingAnimationLength}`).parent('right');
@@ -40,8 +39,8 @@ function draw() {
     // rect(-width / 2, -height / 2, width, height);
 
     if (!cube.isRotating()) {
-        m2memo.html('M2:<br>' + cube.getM2Memo());
-        r2memo.html('R2:<br>' + cube.getR2Memo());
+        M2memo.html('M2:<br>' + cube.getM2memo());
+        R2memo.html('R2:<br>' + cube.getR2memo());
     }
 }
 
@@ -88,8 +87,8 @@ function mixCube() {
 function applyM2R2() {
     if (cube.isRotating()) return;
 
-    if (!cube.m2Finished()) {
-        let str = cube.getM2Memo().split("<br>")[0];
+    if (!cube.M2finished()) {
+        let str = cube.getM2memo().split("<br>")[0];
         let [a, b] = str.split(',');
         b = b.split('(')[0];
         // console.log(a, b);
@@ -102,8 +101,8 @@ function applyM2R2() {
         applyM2(a);
         applyM2(b);
     }
-    else if (!cube.r2Finished()) {
-        let str = cube.getR2Memo().split("<br>")[0];
+    else if (!cube.R2finished()) {
+        let str = cube.getR2memo().split("<br>")[0];
         let [a, b] = str.split(',');
         b = b.split('(')[0];
         // console.log(a, b);
@@ -121,12 +120,12 @@ function applyM2R2() {
     }
 }
 
-function applyM2(m2piece) {
-    for (let move of m2algorithm[m2piece]) cube.applyMove(move);
+function applyM2(M2piece) {
+    for (let move of M2algorithm[M2piece]) cube.applyMove(move);
 }
 
-function applyR2(r2piece) {
-    for (let move of r2algorithm[r2piece]) cube.applyMove(move);
+function applyR2(R2piece) {
+    for (let move of R2algorithm[R2piece]) cube.applyMove(move);
 }
 
 function applyPLL() {

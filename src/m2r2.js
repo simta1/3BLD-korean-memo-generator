@@ -1,4 +1,4 @@
-const m2algorithm = {
+const M2algorithm = {
     "가": [Move.L, Move.U_, Move.L_, Move.U, Move.M_, Move.M_, Move.U_, Move.L, Move.U, Move.L_ ],
     "나": [Move.M_, Move.M_],
     "다": [Move.R_, Move.U, Move.R, Move.U_, Move.M_, Move.M_, Move.U, Move.R_, Move.U_, Move.R],
@@ -23,7 +23,7 @@ const m2algorithm = {
     "카+종": [Move.B_, Move.R_, Move.B, Move.M_, Move.M_, Move.B_, Move.R, Move.B]
 };
 
-const r2algorithm = {
+const R2algorithm = {
     "고": [Move.L, Move.U_, Move.L_, Move.U, Move.L_, Move.U_, Move.L, Move.U, Move.R, Move.R, Move.U_, Move.L_, Move.U, Move.L, Move.U_, Move.L, Move.U, Move.L_],
     "노": [Move.L_, Move.U_, Move.L, Move.U, Move.R, Move.R, Move.U_, Move.L_, Move.U, Move.L],
     "도": [Move.R, Move.R],
