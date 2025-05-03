@@ -243,7 +243,7 @@ class Cube {
             while (true) {
                 const piece = this.pieces.find(piece => piece.x == x && piece.y == y && piece.z == z);
 
-                if (piece.getName() != 'b') m2.push({ pieceName: piece.getName(), sorted: piece.isCorrectOrientation() });
+                if (piece.isNotBuffer()) m2.push({ pieceName: piece.getName(), sorted: piece.isCorrectOrientation() });
                 checked[piece.getIdx()] = true;
                 x = piece.origx;
                 y = piece.origy;
@@ -278,11 +278,57 @@ class Cube {
 
         return this.m2memo;
     }
-
+    
     getR2Memo() {
         if (!this.rotating) {
-            this.r2memo = "";
+            let cornerPieces = this.pieces.filter(piece => piece.isCornerPiece() && !(piece.isSolved()));
+            let r2 = [];
+            
+            let bufferX = 1, bufferY = 1, bufferZ = 1;
+            let x = bufferX, y = bufferY, z = bufferZ;
+            
+            const checked = new Array(27).fill(0);
+            while (true) {
+                const piece = this.pieces.find(piece => piece.x == x && piece.y == y && piece.z == z);
 
+                if (piece.isNotBuffer()) r2.push({ pieceName: piece.getName(), orientation: piece.getCornerOrientation() });
+                checked[piece.getIdx()] = true;
+                x = piece.origx;
+                y = piece.origy;
+                z = piece.origz;
+
+                if (x == bufferX && y == bufferY && z == bufferZ) { // 버퍼 막힘
+                    const piece = cornerPieces.find(piece => !checked[piece.getIdx()]);
+                    if (piece) {
+                        r2.push({ pieceName: piece.getName(), orientation: 0 });
+                        bufferX = x = piece.origx;
+                        bufferY = y = piece.origy;
+                        bufferZ = z = piece.origz;
+                    }
+                    else break;
+                }
+            }
+            
+            this.r2memo = "";
+            let cnt = 0;
+            let prevPieceName;
+            let prevOri = 0;
+            for (let { pieceName, orientation } of r2) {
+                if (prevOri) {
+                    dist = getDist(prevPieceName, pieceName);
+                    orientation += prevOri * ((dist & 1) ? -1 : 1);
+                    orientation = (orientation + 3) % 3;
+                }
+
+                let str = composeKorean(pieceName, orientation == 0 ? 'ㅗ' : 'ㅏ');
+                if (orientation == 2) str += "+종";
+                prevPieceName = pieceName;
+                prevOri = orientation;
+                this.r2memo += str;
+                if (++cnt & 1) this.r2memo += ",";
+                else this.r2memo += "<br>";
+            }
+            if (cnt & 1) this.r2memo += "도(PLL 예외형)"
         }
 
         return this.r2memo;
@@ -290,5 +336,19 @@ class Cube {
 
     isRotating() {
         return this.rotating || this.pendingMoves.length > 0;
+    }
+
+    m2Finished() {
+        this.getM2Memo();
+        return this.m2memo.length == 0 || this.m2memo.split("<br>")[0] == "나,나(PLL 예외형)"; // m2 끝났거나 pll 예외형만 남은 경우
+    }
+
+    r2Finished() {
+        this.getR2Memo();
+        return this.r2memo.length == 0 || this.r2memo.split("<br>")[0] == "도,도(PLL 예외형)"; // r2 끝났거나 pll 예외형만 남은 경우
+    }
+
+    isSolved() {
+        return this.pieces.every(piece => piece.isSolved());
     }
 }

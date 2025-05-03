@@ -165,6 +165,10 @@ class Piece {
         return this.colors.length == 3;
     }
     
+    isNotBuffer() {
+        return this.getName() != 'b';
+    }
+    
     isCorrectPermutation() {
         return this.x === this.origx && this.y === this.origy && this.z === this.origz;
     }
@@ -177,14 +181,18 @@ class Piece {
             else if (this.colors.includes(GREEN)) targetVertices = [this.vertices[1], this.vertices[3], this.vertices[7], this.vertices[5]];
             else targetVertices = [this.vertices[0], this.vertices[2], this.vertices[6], this.vertices[4]]; // BLUE
         
-
             if (this.y > 0) return targetVertices.every(v => v[1] > this.y * len);
             if (this.y < 0) return targetVertices.every(v => v[1] < this.y * len);
             if (this.z > 0) return targetVertices.every(v => v[2] > this.z * len);
-            return targetVertices.every(v => v[2] < this.z * len);
+            return targetVertices.every(v => v[2] < this.z * len); // this.z < 0
         }
         if (this.isCornerPiece()) {
-            return true;
+            let targetVertices;
+            if (this.colors.includes(WHITE)) targetVertices = [this.vertices[0], this.vertices[1], this.vertices[5], this.vertices[4]];
+            else targetVertices = [this.vertices[2], this.vertices[3], this.vertices[7], this.vertices[6]]; // YELLOW
+            
+            if (this.y > 0) return targetVertices.every(v => v[1] > this.y * len);
+            return targetVertices.every(v => v[1] < this.y * len); // this.y < 0
         }
         return true;
     }
@@ -193,5 +201,28 @@ class Piece {
         return this.isCorrectPermutation() && this.isCorrectOrientation();
     }
     
-    checkOr
+    getCornerOrientation() {
+        let indices = "";
+        if (this.y > 0) {
+            for (let i = 0; i < 8; i++) if (this.vertices[i][1] > this.y * len) indices += i;
+        }
+        else { // this.y < 0
+            for (let i = 0; i < 8; i++) if (this.vertices[i][1] < this.y * len) indices += i;
+        }
+        if (indices == "0145" || indices == "2367") return 0; // 하양 or 노랑
+        if (indices == "0123" || indices == "4567") return 1; // 주황 or 빨강
+        return 2; // 초록 or 파랑
+    }
+}
+
+facePieces = [
+    ["ㄱㄴㄷㄹ", "ㅁㅂㅅ"], // 윗면 / 아랫면
+    ["ㄱㄴㅁㅂ", "ㄷㄹㅅ"], // 왼쪽면 / 오른쪽면
+    ["ㄱㄹㅁ", "ㄴㄷㅂㅅ"] // 앞면 / 뒷면
+];
+
+function getDist(pieceName1, pieceName2) {
+    let res = 0;
+    for (let [a, b] of facePieces) res += a.includes(pieceName1) && b.includes(pieceName2) || a.includes(pieceName2) && b.includes(pieceName1);
+    return res;
 }

@@ -13,7 +13,7 @@ function setup() {
     m2memo = createP('M2:<br>' + cube.getM2Memo()).style('font-family', "'JetBrains Mono', monospace").parent('right');
     r2memo = createP('R2:<br>' + cube.getR2Memo()).style('font-family', "'JetBrains Mono', monospace").parent('right');
     createButton('큐브 섞기').mousePressed(mixCube).style('margin-left', '0px').parent('right');
-    m2btn = createButton('M2 사용').mousePressed(applyM2memo).parent('right');
+    m2btn = createButton('M2R2 사용').mousePressed(applyM2R2).parent('right');
 }
 
 function draw() {
@@ -32,21 +32,21 @@ function draw() {
 }
 
 function keyReleased() {
-    // if (key == 'r') applyM2("가+종");
-    // else if (key == 's') applyM2("나+종");
-    // else if (key == 'e') applyM2("다+종");
-    // else if (key == 'f') applyM2("라+종");
-    // else if (key == 'a') applyM2("마+종");
-    // else if (key == 'q') applyM2("바+종");
-    // else if (key == 't') applyM2("사+종");
-    // else if (key == 'd') applyM2("아+종");
-    // else if (key == 'w') applyM2("자+종");
-    // else if (key == 'c') applyM2("차+종");
-    // else if (key == 'z') applyM2("카+종");
+    // if (key == 'r') applyR2("고");
+    // else if (key == 's') applyR2("노");
+    // else if (key == 'e') applyR2("도");
+    // else if (key == 'f') applyR2("로");
+    // else if (key == 'a') applyR2("모");
+    // else if (key == 'q') applyR2("보");
+    // else if (key == 't') applyR2("소");
+    // else if (key == 'd') applyR2("오");
+    // else if (key == 'w') applyR2("조");
+    // else if (key == 'c') applyR2("초");
+    // else if (key == 'z') applyR2("코");
 
     // if (key == 'Z') cube.undoMove();
     // else if (key == 'Y') cube.redoMove();
-    //
+    
     // else if (key == 'F') cube.applyMove(Move.F);
     // else if (key == 'S') cube.applyMove(Move.S);
     // else if (key == 'B') cube.applyMove(Move.B);
@@ -69,24 +69,50 @@ function mixCube() {
     for (let move of mixMoves(20 + Math.floor(Math.random() * 2))) cube.applyMove(move);
 }
 
-function applyM2memo() {
+function applyM2R2() {
     if (cube.isRotating()) return;
 
-    let str = cube.getM2Memo().split('<br>')[0];
-    if (str.length == 0) return;
-    let [a, b] = str.split(',');
-    b = b.split('(')[0];
-    // console.log(a, b);
-    
-    // M-Slice 고려
-    let { first, middle, last } = decomposeKorean(b[0]);
-    if (first === 'ㄹ') first = 'ㅊ';
-    else if (first === 'ㅊ') first = 'ㄹ';
-    b = composeKorean(first, middle, last) + b.slice(1);
-    applyM2(a);
-    applyM2(b);
+    if (!cube.m2Finished()) {
+        let str = cube.getM2Memo().split("<br>")[0];
+        let [a, b] = str.split(',');
+        b = b.split('(')[0];
+        // console.log(a, b);
+        
+        // M-Slice 고려
+        let { first, middle, last } = decomposeKorean(b[0]);
+        if (first === 'ㄹ') first = 'ㅊ';
+        else if (first === 'ㅊ') first = 'ㄹ';
+        b = composeKorean(first, middle, last) + b.slice(1);
+        applyM2(a);
+        applyM2(b);
+    }
+    else if (!cube.r2Finished()) {
+        let str = cube.getR2Memo().split("<br>")[0];
+        let [a, b] = str.split(',');
+        b = b.split('(')[0];
+        // console.log(a, b);
+        
+        // R-Slice
+        let { first, middle, last } = decomposeKorean(b[0]);
+        if (first === 'ㄹ') first = 'ㅅ';
+        else if (first === 'ㅅ') first = 'ㄹ';
+        b = composeKorean(first, middle, last) + b.slice(1);
+        applyR2(a);
+        applyR2(b);
+    }
+    else if (!cube.isSolved()) {
+        applyPLL();
+    }
 }
 
 function applyM2(m2piece) {
     for (let move of m2algorithm[m2piece]) cube.applyMove(move);
+}
+
+function applyR2(r2piece) {
+    for (let move of r2algorithm[r2piece]) cube.applyMove(move);
+}
+
+function applyPLL() {
+    for (let move of PLLalgorithm) cube.applyMove(move);
 }
