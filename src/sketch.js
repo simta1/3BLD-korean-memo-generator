@@ -5,28 +5,55 @@ let slider;
 let orientationHighlightToggle;
 
 function setup() {
-    createCanvas(600, 600, WEBGL).style('border', '2px solid black').parent('canvas');
+    let canvas = createCanvas(600, 600, WEBGL).style('border', '2px solid black').parent('canvas');
+    select('#bottom').style('width', `${canvas.elt.offsetWidth}px`);
+
     camera(300, -300, 750, 0, 0, 0, 0, 1, 0);
     orbitControl();
-    
 	cube = new Cube();
 
-    M2memo = createP('M2:<br>' + cube.getM2memo()).style('font-family', "'JetBrains Mono', monospace").parent('right');
-    R2memo = createP('R2:<br>' + cube.getR2memo()).style('font-family', "'JetBrains Mono', monospace").parent('right');
-    createButton('큐브 섞기').mousePressed(mixCube).style('margin-left', '0px').parent('right');
-    createButton('M2R2 사용').mousePressed(applyM2R2).parent('right');
+    M2memo = select('#M2memo');
+    R2memo = select('#R2memo');
 
-    slider = createSlider(1, 60, rotatingAnimationLength, 1).style('display', 'block').style('width', '200px').style('margin-top', '3px').parent('right');
-    sliderValueDisplay = createSpan(`회전당 프레임 수 : ${rotatingAnimationLength}`).parent('right');
+    createButton('큐브 섞기')
+        .mousePressed(mixCube)
+        .style('margin-left', '0px')
+        .style('display', 'block')
+        .parent('right');
+
+    createButton('M2R2 사용')
+        .mousePressed(applyM2R2)
+        .style('margin-left', '0px')
+        .parent('right');
+
+    orientationHighlightToggle = createCheckbox('오리엔테이션 강조 표시', highlightMisorientedPieces)
+        .style('margin-top', '3px')
+        .parent('bottom');
+
+    orientationHighlightToggle.changed(() => {
+        highlightMisorientedPieces = orientationHighlightToggle.checked();
+    });
+
+    slider = createSlider(1, 60, rotatingAnimationLength, 1)
+        .style('width', '200px')
+        .style('margin-top', '10px')
+        .style('display', 'block')
+        .parent('bottom');
+
     slider.input(() => {
         rotatingAnimationLength = slider.value();
         sliderValueDisplay.html(`회전당 프레임 수 : ${rotatingAnimationLength}`);
     });
-    
-    orientationHighlightToggle = createCheckbox('오리엔테이션 강조 표시', highlightMisorientedPieces).style('margin-top', '3px').parent('left');
-    orientationHighlightToggle.changed(() => {
-        highlightMisorientedPieces = orientationHighlightToggle.checked();
-    });
+
+    sliderValueDisplay = createSpan(`회전당 프레임 수 : ${rotatingAnimationLength}`)
+        .style('margin-top', '4px')
+        .parent('bottom');
+
+    setTimeout(() => {
+        const canvasWidth = min(600, windowWidth - select('#right').elt.offsetWidth - 20);
+        const canvasHeight = min(600, windowHeight - select('#bottom').elt.offsetHeight - 20);
+        resizeCanvas(canvasWidth, canvasHeight);
+    }, 0);
 }
 
 function draw() {

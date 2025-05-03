@@ -1,4 +1,4 @@
-let rotatingAnimationLength = 8;
+let rotatingAnimationLength = 7;
 
 class Cube {
     constructor() {
