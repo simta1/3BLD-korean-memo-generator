@@ -2,12 +2,13 @@ let cube;
 let M2memo;
 let R2memo;
 let slider;
+let sliderValueDisplay;
 let orientationHighlightToggle;
 
-let scrambleInput, applyInputBtn;
+let scrambleInput;
 
 function setup() {
-    let canvas = createCanvas(600, 600, WEBGL).style('border', '2px solid black').parent('canvas');
+    let canvas = createCanvas(600, 600, WEBGL).parent('canvas');
 
     camera(300, -300, 750, 0, 0, 0, 0, 1, 0);
     orbitControl();
@@ -15,63 +16,62 @@ function setup() {
 
     M2memo = select('#M2memo');
     R2memo = select('#R2memo');
+    orientationHighlightToggle = select('#orientToggle');
+    slider = select('#rotatingSlider');
+    sliderValueDisplay = select('#sliderValueDisplay');
+    scrambleInput = select('#scrambleInput');
 
-    createButton('큐브 섞기')
-        .mousePressed(mixCube)
-        .style('margin-left', '0px')
-        .style('display', 'block')
-        .parent('right');
-
-    createButton('M2R2 사용')
-        .mousePressed(applyM2R2)
-        .style('margin-left', '0px')
-        .parent('right');
-
-    orientationHighlightToggle = createCheckbox('오리엔테이션 강조 표시', highlightMisorientedPieces)
-        .style('margin-top', '3px')
-        .parent('bottom');
+    select('#btnMix').mousePressed(mixCube);
+    select('#btnM2R2').mousePressed(applyM2R2);
+    select('#btnApplyScramble').mousePressed(applyScramble);
 
     orientationHighlightToggle.changed(() => {
         highlightMisorientedPieces = orientationHighlightToggle.checked();
     });
 
-    slider = createSlider(1, 60, rotatingAnimationLength, 1)
-        .style('width', '80px')
-        .style('margin-top', '10px')
-        .style('vertical-align', 'middle')
-        .parent('bottom');
+    slider.value(rotatingAnimationLength);
+    sliderValueDisplay.html(`회전당 프레임 수 : ${rotatingAnimationLength}`);
 
     slider.input(() => {
         rotatingAnimationLength = slider.value();
         sliderValueDisplay.html(`회전당 프레임 수 : ${rotatingAnimationLength}`);
     });
 
-    sliderValueDisplay = createSpan(`회전당 프레임 수 : ${rotatingAnimationLength}`)
-        .style('margin-top', '4px')
-        .style('vertical-align', 'middle')
-        .parent('bottom');
-
-    setTimeout(() => {
-        const canvasWidth = min(600, windowWidth - select('#right').elt.offsetWidth - 20);
-
-        scrambleInput = createElement('textarea')
-            .style('display', 'block')
-            .style('resize', 'none')
-            .style('width', `${canvasWidth}px`)
-            .style('margin-top', '5px')
-            .style('margin-bottom', '5px')
-            .parent('bottom');
-
-        applyInputBtn = createButton("스크램블 적용")
-            .mousePressed(applyScramble)
-            .style('margin-top', '0px')
-            .parent('bottom');
-
-        const canvasHeight = min(600, windowHeight - select('#bottom').elt.offsetHeight - 20);
-        resizeCanvas(canvasWidth, canvasHeight);
-    }, 0);
+    computeLayout();
+    
+    const ta = scrambleInput.elt;
+    function autoGrow(el) {
+        el.style.height = 'auto';
+        el.style.height = Math.min(270, el.scrollHeight) + 'px';  // CSS max-height와 맞춤
+    }
+    autoGrow(ta);
+    ta.addEventListener('input', function () { autoGrow(ta); });
     
     console.log("테스트용 스크램블:\nB U2 L2 R2 U2 F D2 B F L' F D L2 F2 D L' U' F");
+}
+
+function windowResized() {
+    computeLayout();
+}
+
+function computeLayout() {
+    const settingsRect = select('#bottom').elt.getBoundingClientRect();
+    const isStacked = window.matchMedia('(max-width: 980px)').matches;
+
+    if (isStacked) {
+        // 스택 모드: 캔버스 래퍼 실제 콘텐츠 폭으로 리사이즈 (margin은 제외됨)
+        const wrapper = select('#canvas').elt;
+        const contentW = Math.max(0, wrapper.clientWidth);
+        const canvasW = Math.min(600, contentW || (windowWidth - 32));
+        const canvasH = Math.min(canvasW, Math.max(220, windowHeight - settingsRect.height - 24));
+        resizeCanvas(canvasW, canvasH);
+    } else {
+        // 2열 모드: 우측 패널 너비를 빼고 계산
+        const panelRect = select('#right').elt.getBoundingClientRect();
+        const canvasW = Math.min(600, windowWidth - panelRect.width - 24);
+        const canvasH = Math.min(canvasW, Math.max(220, windowHeight - settingsRect.height - 24));
+        resizeCanvas(Math.max(0, canvasW), Math.max(0, canvasH));
+    }
 }
 
 function draw() {

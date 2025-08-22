@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ko">
     <head>
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -14,16 +14,59 @@
     </head>
 
     <body>
-        <div id="container" style="display: flex;">
-            <div id="canvas"></div>
-            <div id="right" style="align-self: flex-end; margin-left: 8px;">
-                <p id="M2memo"></p>
-                <p style="white-space: nowrap;">------------------</p>
-                <p id="R2memo"></p>
-            </div>
-        </div>
+        <input id="settingsOpen" type="checkbox" class="visually-hidden">
 
-        <div id="bottom" style="margin-left: 3px"></div>
+        <header class="topbar shell" aria-label="Top bar">
+            <div class="brand">3BLD memo</div>
+            <label class="icon-button" for="settingsOpen" aria-label="설정 열기">☰</label>
+        </header>
+
+        <main id="container" class="shell">
+            <div id="canvas" class="canvas-wrap" aria-label="3BLD Cube Canvas"></div>
+
+            <div id="right" class="right-col">
+                <aside id="rightMain" class="panel">
+                    <div class="actions">
+                        <button id="btnMix" class="btn">큐브 섞기</button>
+                        <button id="btnM2R2" class="btn">M2R2 사용</button>
+                    </div>
+
+                    <div class="memo">
+                        <p id="M2memo">M2:</p>
+                        <div class="divider" aria-hidden="true"></div>
+                        <p id="R2memo">R2:</p>
+                    </div>
+                </aside>
+
+                <aside id="rightScramble" class="panel">
+                    <div class="scramble">
+                        <label for="scrambleInput" class="field-label">스크램블</label>
+                        <textarea id="scrambleInput" rows="4" placeholder="스크램블 입력 (예: B U2 L2 ...)"></textarea>
+                        <button id="btnApplyScramble" class="btn">스크램블 적용</button>
+                    </div>
+                </aside>
+            </div>
+        </main>
+
+        <section id="bottom" class="modal" aria-label="Settings">
+            <label class="backdrop" for="settingsOpen" aria-hidden="true"></label>
+            <div class="modal-card">
+                <div class="modal-head">
+                    <h2>설정</h2>
+                    <label class="close" for="settingsOpen" aria-label="설정 닫기">×</label>
+                </div>
+                <div class="modal-body">
+                    <label class="toggle">
+                        <input id="orientToggle" type="checkbox">
+                        <span>오리엔테이션 강조 표시</span>
+                    </label>
+                    <div class="slider-row">
+                        <input id="rotatingSlider" type="range" min="1" max="60" value="30">
+                        <span id="sliderValueDisplay">회전당 프레임 수 : 30</span>
+                    </div>
+                </div>
+            </div>
+        </section>
 
         <script src="src/utils.js"></script>
         <script src="src/color.js"></script>
