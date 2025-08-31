@@ -74,9 +74,14 @@ function computeLayout() {
     }
 }
 
+function settingsOpen() {
+    const el  =document.getElementById('settingsOpen');
+    return !!(el && el.checked);
+}
+
 function draw() {
     background(255);
-    orbitControl();
+    if (!settingsOpen()) orbitControl();
     cube.run();
 
     // noFill();
