@@ -1,79 +1,108 @@
 <!DOCTYPE html>
 <html lang="ko">
-    <head>
-        <meta charset="utf-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-        <title>3BLD memo</title>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3BLD Memo Generator</title>
+    <link rel="stylesheet" type="text/css" href="style.css">
+    <script src="libraries/p5.min.js"></script>
+    <script src="libraries/p5.sound.min.js"></script>
+</head>
 
-        <link rel="stylesheet" type="text/css" href="style.css">
-        <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono&display=swap" rel="stylesheet">
+<body>
+    <input id="settingsOpen" type="checkbox" class="visually-hidden">
 
-        <script src="libraries/p5.min.js"></script>
-        <script src="libraries/p5.sound.min.js"></script>
-    </head>
-
-    <body>
-        <input id="settingsOpen" type="checkbox" class="visually-hidden">
-
-        <header class="topbar shell" aria-label="Top bar">
-            <div class="brand">3BLD memo</div>
-            <label class="icon-button" for="settingsOpen" aria-label="설정 열기">☰</label>
+    <div class="app-shell">
+        <header class="app-header">
+            <div class="brand">3BLD Memo</div>
+            <label class="btn-icon" for="settingsOpen" aria-label="설정 열기">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M3 12h18M3 6h18M3 18h18" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+            </label>
         </header>
 
-        <main id="container" class="shell">
-            <div id="canvas" class="canvas-wrap" aria-label="3BLD Cube Canvas"></div>
+        <main id="container" class="main-grid">
+            <section class="canvas-container">
+                <div id="canvas" class="canvas-wrap" aria-label="3BLD Cube Canvas"></div>
+            </section>
 
-            <div id="right" class="right-col">
-                <aside id="rightMain" class="panel">
-                    <div class="actions">
-                        <button id="btnMix" class="btn">큐브 섞기</button>
-                        <button id="btnM2R2" class="btn">M2R2 사용</button>
+            <aside id="right" class="sidebar">
+
+                <div class="card">
+                    <div class="btn-group">
+                        <button id="btnMix" class="btn btn-primary">
+                            큐브 섞기
+                        </button>
+                        <button id="btnM2R2" class="btn btn-primary">M2/R2</button>
                     </div>
 
-                    <div class="memo">
-                        <p id="M2memo">M2:</p>
-                        <div class="divider" aria-hidden="true"></div>
-                        <p id="R2memo">R2:</p>
-                    </div>
-                </aside>
+                    <div class="divider"></div>
 
-                <aside id="rightScramble" class="panel">
-                    <div class="scramble">
-                        <label for="scrambleInput" class="field-label">스크램블</label>
-                        <textarea id="scrambleInput" rows="4" placeholder="스크램블 입력 (예: B U2 L2 ...)"></textarea>
-                        <button id="btnApplyScramble" class="btn">스크램블 적용</button>
+                    <div class="memo-area">
+                        <span class="memo-label">M2 Memo</span>
+                        <div id="M2memo" class="memo-content text-mono">...</div>
                     </div>
-                </aside>
-            </div>
+                    <div class="memo-area">
+                        <span class="memo-label">R2 Memo</span>
+                        <div id="R2memo" class="memo-content text-mono">...</div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <label for="scrambleInput" class="input-label">스크램블</label>
+                    <textarea id="scrambleInput" class="input-textarea text-mono" rows="3"
+                        placeholder="ex) B U2 L2 ..."></textarea>
+                    <button id="btnApplyScramble" class="btn btn-primary" style="margin-top:8px">
+                        적용
+                    </button>
+                </div>
+
+            </aside>
         </main>
+    </div>
 
-        <section id="bottom" class="modal" aria-label="Settings">
-            <label class="backdrop" for="settingsOpen" aria-hidden="true"></label>
-            <div class="modal-card">
-                <div class="modal-head">
-                    <h2>설정</h2>
-                    <label class="close" for="settingsOpen" aria-label="설정 닫기">×</label>
-                </div>
-                <div class="modal-body">
-                    <label class="toggle">
+    <div class="modal-overlay">
+        <label class="modal-backdrop" for="settingsOpen" aria-hidden="true" style="position:absolute;inset:0"></label>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Settings</h2>
+                <label class="btn-icon" for="settingsOpen" aria-label="Close" style="width:36px;height:36px">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M18 6L6 18M6 6l12 12" stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
+                </label>
+            </div>
+
+            <div class="modal-body">
+                <div class="setting-item">
+                    <span>오리엔테이션 강조</span>
+                    <label class="switch">
                         <input id="orientToggle" type="checkbox">
-                        <span>오리엔테이션 강조 표시</span>
+                        <span class="slider"></span>
                     </label>
-                    <div class="slider-row">
-                        <input id="rotatingSlider" type="range" min="1" max="60" value="30">
-                        <span id="sliderValueDisplay">회전당 프레임 수 : 30</span>
+                </div>
+
+                <div style="padding-top:16px">
+                    <div style="display:flex;justify-content:space-between;margin-bottom:8px">
+                        <span style="font-size:0.9rem">큐브 회전 속도</span>
+                        <span id="sliderValueDisplay" class="text-mono"
+                            style="font-size:0.85rem;color:var(--c-text-muted)">30 FPS</span>
                     </div>
+                    <input id="rotatingSlider" type="range" min="1" max="60" value="30">
                 </div>
             </div>
-        </section>
+        </div>
+    </div>
 
-        <script src="src/utils.js"></script>
-        <script src="src/color.js"></script>
-        <script src="src/move.js"></script>
-        <script src="src/m2r2.js"></script>
-        <script src="src/piece.js"></script>
-        <script src="src/cube.js"></script>
-        <script src="src/sketch.js"></script>
-    </body>
+    <script src="src/utils.js"></script>
+    <script src="src/color.js"></script>
+    <script src="src/move.js"></script>
+    <script src="src/m2r2.js"></script>
+    <script src="src/piece.js"></script>
+    <script src="src/cube.js"></script>
+    <script src="src/sketch.js"></script>
+</body>
+
 </html>

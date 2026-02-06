@@ -12,7 +12,7 @@ function setup() {
 
     camera(300, -300, 750, 0, 0, 0, 0, 1, 0);
     orbitControl();
-	cube = new Cube();
+    cube = new Cube();
 
     M2memo = select('#M2memo');
     R2memo = select('#R2memo');
@@ -38,7 +38,7 @@ function setup() {
     });
 
     computeLayout();
-    
+
     const ta = scrambleInput.elt;
     function autoGrow(el) {
         el.style.height = 'auto';
@@ -46,8 +46,15 @@ function setup() {
     }
     autoGrow(ta);
     ta.addEventListener('input', function () { autoGrow(ta); });
-    
+
     console.log("테스트용 스크램블:\nB U2 L2 R2 U2 F D2 B F L' F D L2 F2 D L' U' F");
+
+    window.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+            const checkbox = document.getElementById('settingsOpen');
+            if (checkbox.checked) checkbox.checked = false;
+        }
+    });
 }
 
 function windowResized() {
@@ -55,27 +62,26 @@ function windowResized() {
 }
 
 function computeLayout() {
-    const settingsRect = select('#bottom').elt.getBoundingClientRect();
-    const isStacked = window.matchMedia('(max-width: 980px)').matches;
+    const isStacked = window.matchMedia('(max-width: 960px)').matches;
+    const availableHeight = windowHeight - 140;
 
     if (isStacked) {
-        // 스택 모드: 캔버스 래퍼 실제 콘텐츠 폭으로 리사이즈 (margin은 제외됨)
         const wrapper = select('#canvas').elt;
         const contentW = Math.max(0, wrapper.clientWidth);
-        const canvasW = Math.min(600, contentW || (windowWidth - 32));
-        const canvasH = Math.min(canvasW, Math.max(220, windowHeight - settingsRect.height - 24));
+        const canvasW = Math.min(600, contentW);
+        const canvasH = Math.min(canvasW, Math.max(300, availableHeight));
         resizeCanvas(canvasW, canvasH);
-    } else {
-        // 2열 모드: 우측 패널 너비를 빼고 계산
+    }
+    else {
         const panelRect = select('#right').elt.getBoundingClientRect();
-        const canvasW = Math.min(600, windowWidth - panelRect.width - 24);
-        const canvasH = Math.min(canvasW, Math.max(220, windowHeight - settingsRect.height - 24));
+        const canvasW = Math.min(600, windowWidth - panelRect.width - 60); // 60 for gap/margins
+        const canvasH = Math.min(canvasW, Math.max(300, availableHeight));
         resizeCanvas(Math.max(0, canvasW), Math.max(0, canvasH));
     }
 }
 
 function settingsOpen() {
-    const el  =document.getElementById('settingsOpen');
+    const el = document.getElementById('settingsOpen');
     return !!(el && el.checked);
 }
 
@@ -118,7 +124,7 @@ function applyM2R2() {
         let str = cube.getM2memo().split("<br>")[0];
         let [a, b] = str.split(',');
         b = b.split('(')[0];
-        
+
         // M-Slice
         let { first, middle, last } = decomposeKorean(b[0]);
         if (first === 'ㄹ') first = 'ㅊ';
@@ -131,7 +137,7 @@ function applyM2R2() {
         let str = cube.getR2memo().split("<br>")[0];
         let [a, b] = str.split(',');
         b = b.split('(')[0];
-        
+
         // R-Slice
         let { first, middle, last } = decomposeKorean(b[0]);
         if (first === 'ㄹ') first = 'ㅅ';
